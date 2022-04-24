@@ -22,13 +22,15 @@ char *const child_args[] = {
 
 int child_main(void *args) {
     printf("在子进程中！\n");
+    sethostname("NewNamespace", 12);
     execv(child_args[0], child_args);
     return 1;
 }
 
 int main() {
     printf("程序开始： \n");
-    int child_pid = clone(child_main, child_stack + STACK_SIZE, SIGCHLD, NULL);
+    int child_pid = clone(child_main, child_stack + STACK_SIZE, CLONE_NEWPID | CLONE_NEWIPC | CLONE_NEWUTS | SIGCHLD,
+                          NULL);
     waitpid(child_pid, NULL, 0);
     printf("已退出\n");
     return 0;
